@@ -60,3 +60,35 @@ function f4(w, x, y, z) {
 }
 
 console.log(f4([1,1], [3,0], [1,-1], [0,2])); // => [0, 10]
+
+function g1(w, x, y, z) {
+    var temp = function(w, x, y, z) {
+        return w + 4 * x + 5 * y + 6 * z;
+    };
+    return _.map([0, 1], function(index) {
+        return temp.apply(null, _.map([w, x, y, z], function(ary) {
+            return ary[index];
+        }));
+    });
+}
+
+function makeWorkOnVectors(fun) {
+    return function(w, x, y, z) {
+        return _.map([0, 1], function(index) {
+            return fun.apply(null, _.map([w, x, y, z], function(ary) {
+                return ary[index];
+            }));
+        });
+    };
+}
+
+var g2 = makeWorkOnVectors(function(w, x, y, z) {
+    return w + 4 * x + 5 * y + 6 * z;
+});
+
+var f5 = makeWorkOnVectors(function(w, x, y, z) {
+    return w + 2 * x - 7 * y + z;
+});
+
+console.log(g2([1,1], [3,0], [1,-1], [0,2])); // => [18, 8]
+console.log(f5([1,1], [3,0], [1,-1], [0,2])); // => [0, 10]

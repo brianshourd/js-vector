@@ -33,6 +33,11 @@ var Vect = (function() {
         });
     };
         
+    vect.matrix = function(m) {
+        return function(v) {
+            return vect.lcom.apply(null, v).apply(null, m);
+        };
+    };
 
     vect.add = vect.vectorize(sum);
 
@@ -47,22 +52,15 @@ var Vect = (function() {
     return vect;
 }());
 
-var f = Vect.lcom(1, 2, -7, 1);
-var g = Vect.lcom(1, 4, 5, 6);
-var h = Vect.lcom(1, 1, 1);
+var m = Vect.matrix([[1, 3], [2, 4]]);
+var x = [-1, 2];
+console.log(m(x)); // => [3, 5]
 
-_.map([f, g], function(fun) {
-    console.log(fun.call(null, [1,1], [3,0], [1,-1], [0,2]));
-});
-console.log(h([1,1], [3,0], [1,-1]));
-// => [0, 10]
-// => [18, 8]
-// => [5, 0]
+var n = Vect.matrix([[1, 2, 3], [4, 5, 6]]);
+var nm = _.compose(n, m);
+console.log(nm(x)); // => [23, 31, 39]
+console.log(n(m(x))); // => [23, 31, 39]
 
-var v = Vect.create(1, 2, 3);
-var w = Vect.create(1, 1, 1);
-var z = Vect.create(0, 0, 1);
-console.log(Vect.add(v, w)); // => [2, 3, 4]
-console.log(Vect.subtract(v, w)); // => [0, 1, 2]
-console.log(Vect.scale(2, v)); // => [2, 4, 6]
-console.log(Vect.add(v, w, z)); // => [2, 3, 5]
+// Coefficients of nm
+console.log(nm([1,0])); // => [13, 17, 21]
+console.log(nm([0,1])); // => [18, 24, 30]

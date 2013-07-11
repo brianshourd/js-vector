@@ -1,10 +1,14 @@
 var Vect = (function() {
     var vect = {};
 
+    vect.create = function() {
+        return _.toArray(arguments);
+    };
+
     vect.vectorize = function(fun) {
         return function() {
             var args = _.toArray(arguments);
-            return _.map([0, 1], function(index) {
+            return _.map(_.range(args[0].length), function(index) {
                 return fun.apply(null, _.map(args, function(ary) {
                     return ary[index];
                 }));
@@ -12,20 +16,16 @@ var Vect = (function() {
         };
     }
 
-    vect.create = function(x, y) {
-        return [x, y];
-    };
+    vect.add = vect.vectorize(function(v, w) {
+        return v + w;
+    });
 
-    vect.add = function(v, w) {
-        return [v[0] + w[0], v[1] + w[1]];
-    };
-
-    vect.subtract = function(v, w) {
-        return [v[0] - w[0], v[1] - w[1]];
-    };
+    vect.subtract = vect.vectorize(function(v, w) {
+        return v - w;
+    });
 
     vect.scale = function(a, v) {
-        return [a * v[0], a * v[1]];
+        return vect.vectorize(function(v) { return a * v; })(v);
     };
 
     return vect;
@@ -47,3 +47,9 @@ _.map([f, g, h], function(fun) {
 // => [0, 10]
 // => [18, 8]
 // => [5, 0]
+
+var v = Vect.create(1, 2, 3);
+var w = Vect.create(1, 1, 1);
+console.log(Vect.add(v, w)); // => [2, 3, 4]
+console.log(Vect.subtract(v, w)); // => [0, 1, 2]
+console.log(Vect.scale(2, v)); // => [2, 4, 6]
